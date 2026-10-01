@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>RUTA SEGURA - INDEL</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Cabecera Institucional INDEL -->
+    <header class="app-header">
+        <div class="app-container">
+            <div class="header-brand">
+                <div class="brand-icon">🛡️</div>
+                <div>
+                    <h1 class="brand-title">
+                        RUTA SEGURA
+                        <span class="badge-indel">INDEL</span>
+                    </h1>
+                    <p class="brand-subtitle">Comunidad Estudiantil</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-container">
+        <!-- Módulo Asistente de Ruta IA (Peldaño M5) -->
+        <section class="seccion-ia">
+            <div class="ia-header">
+                <div class="ia-header-icon">✨</div>
+                <div>
+                    <h2 class="ia-titulo">
+                        Asistente de Ruta IA
+                        <span class="badge-gemini">Gemini</span>
+                    </h2>
+                    <p class="ia-descripcion">Analiza los reportes comunitarios y genera una recomendación personalizada para tu trayecto.</p>
+                </div>
+            </div>
+
+            <form id="form-analisis-ia" class="ia-form">
+                <input 
+                    type="text" 
+                    id="input-destino" 
+                    class="ia-input" 
+                    placeholder="¿Hacia dónde te diriges? (ej. Estación de tren, Casa...)" 
+                    required
+                >
+                <button type="submit" id="btn-analizar-ia" class="btn-ia">
+                    <span>⚡</span>
+                    <span>Analizar Ruta Segura</span>
+                </button>
+            </form>
+
+            <!-- Contenedor donde se renderiza la tarjeta de recomendación IA -->
+            <div id="contenedor-resultado-ia"></div>
+        </section>
+
+        <!-- Filtros y Selección por Nivel de Seguridad -->
+        <section class="filtros-seccion">
+            <nav class="barra-filtros" aria-label="Filtro de seguridad">
+                <button class="btn-filtro activo" data-filtro="todos">Todos</button>
+                <button class="btn-filtro" data-filtro="seguros">🟢 Solo iluminadas</button>
+                <button class="btn-filtro" data-filtro="riesgo">🔴 Puntos de riesgo</button>
+            </nav>
+        </section>
+
+        <!-- Lista de Reportes Comunitarios -->
+        <section>
+            <div id="lista-reportes" class="lista-reportes" role="region" aria-live="polite">
+                <!-- Los reportes o el estado vacío se insertan dinámicamente aquí -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Botón de Acción Flotante (FAB) para Reporte Rápido -->
+    <button id="btn-fab" class="fab-reportar" aria-label="Reportar nueva zona o tramo">
+        <span>➕</span>
+        <span>Reportar zona</span>
+    </button>
+
+    <!-- Modal / Drawer para Registrar Nuevo Reporte -->
+    <div id="modal-reporte" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+        <div class="modal-contenido">
+            <div class="modal-header">
+                <h2 id="modal-titulo" class="brand-title">Reportar zona o tramo</h2>
+                <button id="btn-cerrar-modal" class="btn-cerrar" aria-label="Cerrar ventana">✕</button>
+            </div>
+
+            <form id="form-reporte">
+                <!-- Selector de Seguridad (Touch Target Grande) -->
+                <div class="form-grupo">
+                    <label class="form-label">1. Nivel de Seguridad *</label>
+                    <div class="tipo-selector">
+                        <label>
+                            <input type="radio" name="tipo-seguridad" value="seguro" checked style="display:none">
+                            <span class="tipo-opcion opcion-seguro">🟢 Seguro / Iluminado</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="tipo-seguridad" value="riesgo" style="display:none">
+                            <span class="tipo-opcion opcion-riesgo">🔴 Peligro / Riesgo</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Nombre del Lugar o Tramo -->
+                <div class="form-grupo">
+                    <label for="input-lugar" class="form-label">2. Lugar o tramo *</label>
+                    <input type="text" id="input-lugar" class="form-input" placeholder="Ej. Parada de colectivo, Av. Belgrano..." required>
+                </div>
+
+                <!-- Horario Recomendado -->
+                <div class="form-grupo">
+                    <label for="input-horario" class="form-label">3. Horario recomendado / Franja crítica *</label>
+                    <input type="text" id="input-horario" class="form-input" placeholder="Ej. 07:00 a 20:00 hs, Evitar de noche..." required>
+                </div>
+
+                <!-- Observaciones -->
+                <div class="form-grupo">
+                    <label for="input-detalles" class="form-label">4. Observaciones adicionales</label>
+                    <input type="text" id="input-detalles" class="form-input" placeholder="Ej. Buena luminaria LED, poco tránsito...">
+                </div>
+
+                <button type="submit" class="btn-submit">Guardar Reporte</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lógica de Negocio y Persistencia en localStorage -->
+    <script src="app.js"></script>
+</body>
+</html>

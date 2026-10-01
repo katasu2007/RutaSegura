@@ -3,8 +3,10 @@ package com.example.ui
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.data.AiRouteService
 import com.example.data.AppDatabase
 import com.example.data.RouteRepository
+import com.example.model.AiRouteRecommendation
 import com.example.model.RouteReport
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,19 +25,21 @@ enum class SecurityFilter(val label: String) {
 }
 
 /**
- * Pestañas principales de visualización: Lista de reportes o Mapa comunitario INDEL.
+ * Pestañas principales de visualización: Lista de reportes, Mapa comunitario INDEL y Asistente IA.
  */
 enum class AppTab(val title: String) {
     LIST("Lista"),
-    MAP("Mapa INDEL")
+    MAP("Mapa INDEL"),
+    AI_ASSISTANT("Asistente IA")
 }
 
 /**
- * ViewModel que controla la lógica de negocio, reportes, filtros y persistencia local de RUTA SEGURA.
+ * ViewModel que controla la lógica de negocio, reportes, filtros, persistencia local y Asistente IA de RUTA SEGURA.
  */
 class RouteViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: RouteRepository
+    private val aiService = AiRouteService()
 
     init {
         val database = AppDatabase.getDatabase(application, viewModelScope)
@@ -56,7 +60,7 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
     // Filtro de seguridad seleccionado
     val selectedFilter = MutableStateFlow(SecurityFilter.ALL)
 
-    // Pestaña activa (Lista o Mapa)
+    // Pestaña activa (Lista, Mapa o Asistente IA)
     val activeTab = MutableStateFlow(AppTab.LIST)
 
     // Reporte seleccionado para vista previa o foco en el mapa
@@ -68,6 +72,11 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
     // Mensaje de confirmación temporal (Snackbar)
     val snackbarMessage = MutableStateFlow<String?>(null)
 
+    // --- Estado para el Asistente de Ruta IA (Peldaño M5) ---
+    val destinationInput = MutableStateFlow("")
+    val isAnalyzingAi = MutableStateFlow(false)
+    val aiRecommendation = MutableStateFlow<AiRouteRecommendation?>(null)
+
     /**
      * Reportes filtrados en tiempo real por búsqueda y por nivel de seguridad.
      */
@@ -78,13 +87,11 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
     ) { reports, query, filter ->
         val queryTrimmed = query.trim().lowercase()
         reports.filter { report ->
-            // Filtro por texto
             val matchesQuery = queryTrimmed.isEmpty() ||
                     report.placeName.lowercase().contains(queryTrimmed) ||
                     report.recommendedHours.lowercase().contains(queryTrimmed) ||
                     report.notes.lowercase().contains(queryTrimmed)
 
-            // Filtro por nivel de seguridad
             val matchesFilter = when (filter) {
                 SecurityFilter.ALL -> true
                 SecurityFilter.SAFE_ONLY -> report.isSafe
@@ -152,6 +159,39 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
             }
             snackbarMessage.value = "Reporte eliminado."
         }
+    }
+
+    /**
+     * Ejecuta el análisis inteligente del trayecto con el Asistente de IA (Peldaño M5)
+     */
+    fun analyzeAiRoute(destination: String? = null) {
+        val targetDestination = (destination ?: destinationInput.value).trim()
+        if (targetDestination.isBlank()) {
+            snackbarMessage.value = "Por favor indica hacia dónde te diriges."
+            return
+        }
+
+        viewModelScope.launch {
+            isAnalyzingAi.value = true
+            try {
+                val currentReports = allReports.value
+                val result = aiService.analyzeRoute(targetDestination, currentReports)
+                aiRecommendation.value = result
+                snackbarMessage.value = "Ruta analizada con éxito."
+            } catch (e: Exception) {
+                aiRecommendation.value = aiService.getFallbackRecommendation(targetDestination, allReports.value)
+            } finally {
+                isAnalyzingAi.value = false
+            }
+        }
+    }
+
+    fun onDestinationInputChanged(value: String) {
+        destinationInput.value = value
+    }
+
+    fun openAiAssistantTab() {
+        activeTab.value = AppTab.AI_ASSISTANT
     }
 
     fun onSearchQueryChanged(newQuery: String) {
