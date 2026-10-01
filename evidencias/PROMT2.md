@@ -5,27 +5,24 @@
 **Fecha/Hora:** 01/10/2026 - 09:00 AM
 **Plataforma / Modelo:** Google AI Studio (Gemini)
 
-### Prompt enviado:ROL: ROL: Sos un desarrollador senior de aplicaciones web experto en frontend (HTML, CSS y JavaScript).
+### Prompt enviado: ROL: Desarrollador Web Senior experto en JavaScript.
 
-CONTEXTO: Estamos en el peldaño M1 de la app RUTA SEGURA para estudiantes del INDEL. Ya tenemos una estructura base, pero necesitamos garantizar que las 3 funciones principales funcionen sin errores y de forma fluida.
+CONTEXTO: 
+Estoy desarrollando la aplicación "RUTA SEGURA" para estudiantes que caminan al instituto INDEL. Actualmente la aplicación permite agregar y visualizar reportes de puntos seguros y de riesgo, pero los datos se pierden al recargar o cerrar la página.
 
-TAREA: Refactorizá y completá el código para asegurar que las siguientes 3 funciones mínimas estén 100% implementadas y conectadas:
+OBJETIVO (Peldaño M2):
+Implementar la persistencia de datos local para que los reportes guardados por el usuario no se borren cuando la página se recargue o se cierre el navegador.
 
-1. Formulario de reporte funcional:
-   - Campos: Nombre del punto/tramo (ej. "Calle del portón principal"), Tipo de reporte (radio/select: "Zona segura / bien iluminada" vs. "Punto de riesgo / peligro"), Descripción breve y Hora recomendada de paso.
-   - Botón claro para enviar el reporte.
+TAREA ESPECÍFICA:
+1. Integra `localStorage` para almacenar la lista de reportes en formato JSON.
+2. Haz que la aplicación cargue automáticamente los reportes guardados en `localStorage` al iniciar la app (`DOMContentLoaded`).
+3. Cada vez que se agregue o elimine un reporte, actualiza el estado en `localStorage`.
+4. Incluye datos semilla o iniciales por defecto (al menos 2 reportes de prueba en las cercanías de INDEL) si `localStorage` está completamente vacío la primera vez.
 
-2. Visualización dinámica:
-   - Lista o tarjetas claras donde se muestren todos los reportes ingresados.
-   - Diferenciación visual inmediata entre reportes de "Seguridad" (ej. borde o badge verde) y "Riesgo" (ej. borde o badge rojo/naranja).
+RESTRICCIONES TÉCNICAS:
+- No uses librerías externas ni servidores externos; solo JavaScript nativo (Vanilla JS).
+- No rompas las funciones existentes (formulario de reporte, visualización y filtros por tipo de seguridad).
+- Mantén el código limpio, estructurado y bien comentado.
 
-3. Filtro interactivo de seguridad:
-   - Botones o selector de filtro para conmutar la vista entre: "Todos", "Solo zonas seguras" y "Solo puntos de riesgo".
-   - Al seleccionar un filtro, la lista debe actualizarse en tiempo real sin recargar la página.
-
-RESTRICCIONES:
-- Todo en un solo código limpio (HTML/CSS/JS) o en los archivos correspondientes del proyecto.
-- En español.
-- Interfaz clara y legible para pantalla de teléfono.
-
-FORMATO DE SALIDA: Entregá el código completo y actualizado.
+FORMATO DE SALIDA:
+Entrega el código JavaScript modificado (o el archivo JS completo) explicando brevemente en 2 líneas qué funciones se modificaron para integrar la persistencia.
