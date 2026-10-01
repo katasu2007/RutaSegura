@@ -1,0 +1,6 @@
+{
+  "name": "Ruta Segura",
+  "description": "Aplicación comunitaria para estudiantes del Instituto INDEL para reportar y consultar zonas seguras y puntos de riesgo en sus trayectos a pie.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
